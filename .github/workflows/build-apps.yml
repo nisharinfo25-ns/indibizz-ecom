@@ -1,0 +1,104 @@
+name: Build IndiaBizz Release APKs & Windows Executable
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build-apks:
+    name: Build Android APKs (Customer, Delivery, Seller)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.50.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Verify Flutter Installation
+        run: flutter doctor -v
+
+      - name: Build Customer App APK
+        run: |
+          cd apps/customer_app
+          flutter pub get
+          flutter build apk --release
+        continue-on-error: false
+
+      - name: Upload Customer App APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: indibizz-customer-app.apk
+          path: apps/customer_app/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Build Delivery Fleet App APK
+        run: |
+          cd apps/delivery_app
+          flutter pub get
+          flutter build apk --release
+        continue-on-error: false
+
+      - name: Upload Delivery App APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: indibizz-delivery-app.apk
+          path: apps/delivery_app/build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Build Seller Console App APK
+        run: |
+          cd apps/seller_app
+          flutter pub get
+          flutter build apk --release
+        continue-on-error: false
+
+      - name: Upload Seller App APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: indibizz-seller-app.apk
+          path: apps/seller_app/build/app/outputs/flutter-apk/app-release.apk
+
+  build-windows-exe:
+    name: Build Windows Release Executable (Seller App)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.50.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Enable Windows Desktop Support
+        run: flutter config --enable-windows-desktop
+
+      - name: Build Windows Seller Executable
+        run: |
+          cd apps/seller_app
+          flutter pub get
+          flutter build windows --release
+
+      - name: Archive Windows Release Bundle
+        run: |
+          Compress-Archive -Path apps/seller_app/build/windows/x64/runner/Release/* -DestinationPath indibizz-seller-windows-x64.zip
+
+      - name: Upload Windows Executable Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: indibizz-seller-windows-x64.zip
+          path: indibizz-seller-windows-x64.zip

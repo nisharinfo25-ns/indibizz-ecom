@@ -1,0 +1,16 @@
+﻿import sys, tempfile
+sys.path.insert(0, 'tools')
+from db_harness import DB, apply_migrations
+srv, db = DB.start(data_dir=tempfile.mkdtemp(prefix='ib_dbg_'))
+apply_migrations(db.conn)
+owner=db.make_user('+919000000001','Owner'); staff=db.make_user('+919000000003','Ravi')
+db.privileged(); db.execute("update profiles set role='OWNER' where id=%s",(owner,))
+db.as_user(owner)
+inv=db.call('owner_create_staff_invite','+919000000003','OWN_DELIVERY_STAFF','Ravi Kumar',None,False)
+print('INVITE', inv)
+db.privileged()
+print(db.row("select phone, invite_code_hash, length(invite_code_hash) from staff_invites"))
+print('staff profile', db.row("select id, phone, role from profiles where id=%s",(staff,)))
+print('crypt', db.one("select extensions.crypt(%s, invite_code_hash) = invite_code_hash from staff_invites",(inv['activation_code'].upper(),)))
+print('salt', db.one("select extensions.gen_salt('bf',8)"))
+db.conn.close()

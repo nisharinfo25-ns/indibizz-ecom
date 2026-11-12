@@ -1,0 +1,11 @@
+﻿import pgserver, psycopg, os, tempfile
+srv = pgserver.get_server(os.path.join(tempfile.gettempdir(), "ib_pgtest"), cleanup_mode="stop")
+conn = psycopg.connect(srv.get_uri(), autocommit=True)
+cur = conn.cursor()
+cur.execute("select name, default_version from pg_available_extensions where name in ('pgcrypto','citext','pg_stat_statements','pg_trgm')")
+print(cur.fetchall())
+cur.execute("create extension if not exists pgcrypto")
+cur.execute("select crypt('123456', gen_salt('bf'))")
+print("pgcrypto OK", cur.fetchone()[0][:10])
+conn.close()
+print("URI", srv.get_uri())

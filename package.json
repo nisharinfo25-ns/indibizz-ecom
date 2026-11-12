@@ -1,0 +1,20 @@
+{
+  "name": "indibizz",
+  "private": true,
+  "version": "1.0.0",
+  "description": "IndiaBizz commerce, logistics and COD platform",
+  "workspaces": [
+    "apps/website",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w @indibizz/website",
+    "build:web": "npm run build -w @indibizz/website",
+    "typecheck": "npm run typecheck -w @indibizz/shared && npm run typecheck -w @indibizz/website",
+    "test": "npm run test -w @indibizz/shared && npm run test -w @indibizz/website",
+    "lint:web": "npm run lint -w @indibizz/website"
+  },
+  "engines": {
+    "node": ">=20.11"
+  }
+}

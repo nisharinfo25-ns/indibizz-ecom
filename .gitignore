@@ -1,0 +1,44 @@
+# Dependencies & Build Artefacts
+node_modules/
+.next/
+build/
+dist/
+out/
+
+# Flutter & Dart
+tools/flutter/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
+*.iml
+.metadata
+
+# Android & iOS Build Output
+**/android/.gradle/
+**/android/app/build/
+**/android/captures/
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+
+# Windows & Temp
+tools/__pycache__/
+**/__pycache__/
+*.pyc
+.localappdata/
+.tmp/
+*.log
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
